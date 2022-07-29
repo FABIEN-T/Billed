@@ -34,12 +34,16 @@ export default class {
       .list()
       .then(snapshot => {
         const bills = snapshot
+          //.sort((a, b) => (b - a)) // Tri des dates
           .map(doc => {
+            // console.log("doc", doc, "!!!" + doc.date)
             try {
               return {
                 ...doc,
+                // ...doc.sort((a, b) => (b - a)),
                 date: formatDate(doc.date),
-                status: formatStatus(doc.status)
+                // date: doc.date,
+                status: formatStatus(doc.status)                
               }
             } catch(e) {
               // if for some reason, corrupted data was introduced, we manage here failing formatDate function
@@ -53,6 +57,8 @@ export default class {
             }
           })
           console.log('length', bills.length)
+          // bills.forEach (tab => { console.log("hey", tab['date']) })
+          // console.log("bills", bills);
         return bills
       })
     }
