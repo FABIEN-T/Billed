@@ -41,6 +41,7 @@ export default class {
               return {
                 ...doc,
                 // ...doc.sort((a, b) => (b - a)),
+                ...doc.sort((a, b) => (a.date < b.date) ? 1 : -1),
                 date: formatDate(doc.date),
                 // date: doc.date,
                 status: formatStatus(doc.status)                

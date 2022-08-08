@@ -86,9 +86,14 @@ export default class {
   }
 
   handleEditTicket(e, bill, bills) {
+    // console.log("id", bill.id)
+    // console.log("PRE this.id", this.id)
     if (this.counter === undefined || this.id !== bill.id) this.counter = 0
     if (this.id === undefined || this.id !== bill.id) this.id = bill.id
-    if (this.counter % 2 === 0) {
+    // console.log("POST this.id", this.id)
+    // console.log("this.counter", this.counter % 2 === 0)
+    // console.log("this.counter", this.counter)
+    if (this.counter % 2 === 0 || this.id === bill.id) {      
       bills.forEach(b => {
         $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
       })
@@ -131,8 +136,14 @@ export default class {
   }
 
   handleShowTickets(e, bills, index) {
+    // console.log("counter PRE", this.counter)
+    // console.log("index", index)
+    // console.log("1 this.index", this.index)
+    // console.log("1 this.index !== index", this.index !== index)
     if (this.counter === undefined || this.index !== index) this.counter = 0
     if (this.index === undefined || this.index !== index) this.index = index
+    // console.log("2 index", index)
+    // console.log("2 this.index", this.index)
     if (this.counter % 2 === 0) {
       $(`#arrow-icon${this.index}`).css({ transform: 'rotate(0deg)'})
       $(`#status-bills-container${this.index}`)
@@ -144,9 +155,16 @@ export default class {
         .html("")
       this.counter ++
     }
-
+    // console.log("counter POST", this.counter)
     bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
+      // console.log("bill.id", bill.id)
+      // console.log("avt", bill, bills)
+      $(`#open-bill${bill.id}`).click((e) => {
+        console.log("e.target", e.target)
+        // console.log("count", this.counter)
+        // console.log("bill après", bill)
+        // console.log("billS après", bills)
+        this.handleEditTicket(e, bill, bills)})
     })
 
     return bills

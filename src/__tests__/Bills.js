@@ -31,7 +31,7 @@ describe("Given I am connected as an employee", () => {
     })
     test("Then bills should be ordered from earliest to latest", () => {
       // code tri par date
-      const sortBills = bills.sort((a, b) => (a.date < b.date) ? 1 : -1)
+      const sortBills = bills.sort((a, b) => (a.date < b.date) ? 1 : -1)      
       // document.body.innerHTML = BillsUI({ data: bills })
       document.body.innerHTML = BillsUI({ data: sortBills })
       const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
@@ -41,3 +41,6 @@ describe("Given I am connected as an employee", () => {
     })
   })
 })
+
+// const sortBills = 
+// bills.getBills().then(data => { BillsUI({ data }) })
