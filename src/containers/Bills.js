@@ -41,7 +41,7 @@ export default class {
               return {
                 ...doc,
                 // ...doc.sort((a, b) => (b - a)),
-                ...doc.sort((a, b) => (a.date < b.date) ? 1 : -1),
+                // ...doc.sort((a, b) => (a.date > b.date) ? 1 : -1), // provoque TypeError: doc.sort is not a function
                 date: formatDate(doc.date),
                 // date: doc.date,
                 status: formatStatus(doc.status)                

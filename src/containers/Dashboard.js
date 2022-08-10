@@ -93,6 +93,7 @@ export default class {
     // console.log("POST this.id", this.id)
     // console.log("this.counter", this.counter % 2 === 0)
     // console.log("this.counter", this.counter)
+    // if (this.counter % 2 === 0) {
     if (this.counter % 2 === 0 || this.id === bill.id) {      
       bills.forEach(b => {
         $(`#open-bill${b.id}`).css({ background: '#0D5AE5' })
