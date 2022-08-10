@@ -59,7 +59,7 @@ export default class Login {
         document.body.style.backgroundColor="#fff"
       })
   }
-
+  // /* istanbul ignore file */
   // not need to cover this function by tests
   login = (user) => {
     if (this.store) {
@@ -74,7 +74,7 @@ export default class Login {
       return null
     }
   }
-
+  // /* istanbul ignore file */
   // not need to cover this function by tests
   createUser = (user) => {
     if (this.store) {
