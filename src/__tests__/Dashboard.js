@@ -11,7 +11,7 @@ import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import { localStorageMock } from "../__mocks__/localStorage.js"
 import mockStore from "../__mocks__/store"
 // import {  } from "../fixtures/bills"
-import { bills } from "../fixtures/bills"
+import { bills } from "../fixtures/bills" // Correction de la ligne précédente
 import router from "../app/Router"
 
 jest.mock("../app/store", () => mockStore)
@@ -242,6 +242,22 @@ describe('Given I am connected as Admin and I am on Dashboard page and I clicked
   })
 })
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // test d'intégration GET
 describe("Given I am a user connected as Admin", () => {
   describe("When I navigate to Dashboard", () => {
@@ -308,4 +324,6 @@ describe("Given I am a user connected as Admin", () => {
 
   })
 })
+
+
 

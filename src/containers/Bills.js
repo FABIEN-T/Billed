@@ -12,6 +12,7 @@ export default class {
     const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`)
     if (iconEye) iconEye.forEach(icon => {
       icon.addEventListener('click', () => this.handleClickIconEye(icon))
+      //console.log("icon-eye_employee", icon) // ajout
     })
     new Logout({ document, localStorage, onNavigate })
   }
@@ -34,14 +35,12 @@ export default class {
       .list()
       .then(snapshot => {
         const bills = snapshot
-          //.sort((a, b) => (b - a)) // Tri des dates
+          //.sort((a, b) => (b - a)) 
+          .sort((a, b) => new Date(b.date) - new Date(a.date)) // Tri des dates
           .map(doc => {
-            // console.log("doc", doc, "!!!" + doc.date)
             try {
               return {
                 ...doc,
-                // ...doc.sort((a, b) => (b - a)),
-                // ...doc.sort((a, b) => (a.date > b.date) ? 1 : -1), // provoque TypeError: doc.sort is not a function
                 date: formatDate(doc.date),
                 // date: doc.date,
                 status: formatStatus(doc.status)                
