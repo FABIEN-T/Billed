@@ -9,9 +9,10 @@ import BillsUI from "../views/BillsUI.js";
 import Bills from "../containers/Bills.js"; // Ajout
 import { bills } from "../fixtures/bills.js";
 // import { ROUTES_PATH} from "../constants/routes.js";
-import { ROUTES, ROUTES_PATH } from "../constants/routes";
+import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store"; // Ajout
+import Router from "../app/Router.js";
 import router from "../app/Router.js";
 
 describe("Given I am connected as an employee", () => {
@@ -50,6 +51,7 @@ describe("Given I am connected as an employee", () => {
       const sortBills = bills.sort((a, b) => (a.date < b.date ? 1 : -1)); // AJOUT
       document.body.innerHTML = BillsUI({ data: sortBills }); // AJOUT
       // document.body.innerHTML = BillsUI({ data: bills })
+      // document.body.innerHTML = BillsUI({ data: bills.sort((a, b) => new Date(b.date) - new Date(a.date)) })
       const dates = screen
         .getAllByText(
           /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
@@ -58,6 +60,32 @@ describe("Given I am connected as an employee", () => {
       const antiChrono = (a, b) => (a < b ? 1 : -1);
       const datesSorted = [...dates].sort(antiChrono);
       expect(dates).toEqual(datesSorted);
+    });
+
+    // AJOUT
+    describe("When I click on button new-bill", () => {
+      test("Then the modal new Bill should open", () => {
+        const onNavigate = (pathname) => {
+          document.body.innerHTML = ROUTES({ pathname });
+        };
+
+        const employeeBill = new Bills({
+          document,
+          onNavigate,
+          mockStore,
+          localStorage: window.localStorage,
+        });
+
+        const handleClickNewBill = jest.fn((e) =>
+          employeeBill.handleClickNewBill(e)
+        );
+        const buttonNewBill = screen.getByTestId("btn-new-bill");
+        buttonNewBill.addEventListener("click", handleClickNewBill);
+        userEvent.click(buttonNewBill);
+        expect(handleClickNewBill).toHaveBeenCalled();
+        expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
+        expect(screen.getByTestId("form-new-bill")).toBeTruthy();
+      });
     });
   });
 
@@ -73,12 +101,12 @@ describe("Given I am connected as an employee", () => {
       //     type: "Employee",
       //   })
       // );
-      $.fn.modal = jest.fn(); // simule le fonctionnement de la fonction Jquery() / $() - Prevent jQuery error   
+      $.fn.modal = jest.fn(); // simule le fonctionnement de la fonction Jquery() / $() - Prevent jQuery error
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
 
-      // document.body.innerHTML = BillsUI(bills[0]);      
+      // document.body.innerHTML = BillsUI(bills[0]);
       document.body.innerHTML = BillsUI({ data: bills });
       // const store = null;
       const employeeBill = new Bills({
@@ -90,42 +118,98 @@ describe("Given I am connected as an employee", () => {
       });
       console.log("employeeBill", employeeBill);
 
-      const iconEye = screen.getAllByTestId("icon-eye");      
-      const handleClickIconEye = jest.fn(icon => employeeBill.handleClickIconEye(icon));
-      
-      iconEye.forEach(icon => {
-        icon.addEventListener('click', (e) => handleClickIconEye(icon));
+      const iconEye = screen.getAllByTestId("icon-eye");
+      const handleClickIconEye = jest.fn((icon) =>
+        employeeBill.handleClickIconEye(icon)
+      );
+
+      iconEye.forEach((icon) => {
+        icon.addEventListener("click", (e) => handleClickIconEye(icon));
         userEvent.click(icon);
-      })
-      expect(handleClickIconEye).toHaveBeenCalled()
+      });
+      expect(handleClickIconEye).toHaveBeenCalled();
 
       // const modale = screen.getByTestId('modaleFile')
-      const modale = screen.getByText('Justificatif')
-      expect(modale).toBeTruthy()
-    })
+      const modale = screen.getByText("Justificatif");
+      expect(modale).toBeTruthy();
+    });
   });
-
 });
 
-describe("When I click on button new-bill", () => {
-  test("Then the modal new Bill should open", () => {
-    const onNavigate = (pathname) => {
-      document.body.innerHTML = ROUTES({ pathname });
-    };
-
-    const employeeBill = new Bills({
-      document,
-      onNavigate,
-      mockStore,
-      localStorage: window.localStorage,
+// test d'intégration GET
+describe("Given I am a user connected as Employee", () => {
+  describe("When I navigate to Bills page", () => {
+    test("fetches bills from mock API GET", async () => {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ type: "Employee", email: "a@a" })
+      );
+      const root = document.createElement("div");
+      root.setAttribute("id", "root");
+      document.body.append(root);
+      router(); // ??? router from "../app/Router.js";
+      window.onNavigate(ROUTES_PATH.Bills);
+      await waitFor(() =>
+        expect(screen.getByText("Mes notes de frais")).toBeTruthy()
+      );
     });
 
-    const handleClickNewBill = jest.fn((e) => employeeBill.handleClickNewBill(e));
-    const buttonNewBill = screen.getByTestId("btn-new-bill");
-    buttonNewBill.addEventListener("click", handleClickNewBill);
-    userEvent.click(buttonNewBill);
-    expect(handleClickNewBill).toHaveBeenCalled();
-    expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
-    expect(screen.getByTestId("form-new-bill")).toBeTruthy();
+    describe("When an error occurs on API", () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills");
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        });
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+            email: "a@a",
+          })
+        );
+        const root = document.createElement("div");
+        root.setAttribute("id", "root");
+        document.body.appendChild(root);
+        router();
+      });
+      test("fetches bills from an API and fails with 404 message error", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error("Erreur 404"));
+            },
+          };
+        });
+        const html = BillsUI({ error: "Erreur 404" });
+        document.body.innerHTML = html;
+        const message = await screen.getByText(/Erreur 404/);
+        expect(message).toBeTruthy();
+        // window.onNavigate(ROUTES_PATH.Bills);
+        // await new Promise(process.nextTick);
+        // // const message = await screen.getByText(/Erreur 404/) // Pourquoi des slash ??? Pour intégrer 404 ?
+        // const message = await screen.getByText("Erreur");
+        // expect(message).toBeTruthy();
+      });
+
+      test("fetches messages from an API and fails with 500 message error", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error("Erreur 500"));
+            },
+          };
+        });
+        const html = BillsUI({ error: "Erreur 500" });
+        document.body.innerHTML = html;
+        const message = await screen.getByText(/Erreur 500/);
+        expect(message).toBeTruthy();
+        // window.onNavigate(ROUTES_PATH.Bills);
+        // await new Promise(process.nextTick);
+        // const message = await screen.getByText("Erreur");
+        // expect(message).toBeTruthy();
+      });
+    });
   });
 });
+
+

@@ -12,7 +12,6 @@ export default class {
     const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`)
     if (iconEye) iconEye.forEach(icon => {
       icon.addEventListener('click', () => this.handleClickIconEye(icon))
-      //console.log("icon-eye_employee", icon) // ajout
     })
     new Logout({ document, localStorage, onNavigate })
   }
@@ -31,8 +30,8 @@ export default class {
   getBills = () => {
     if (this.store) {
       return this.store
-      .bills()
-      .list()
+      .bills() // ????
+      .list() // ????
       .then(snapshot => {
         const bills = snapshot
           //.sort((a, b) => (b - a)) 
