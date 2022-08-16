@@ -3,12 +3,11 @@
  */
 
 // import {screen, waitFor} from "@testing-library/dom"
-import { fireEvent, screen, waitFor, getByTestId } from "@testing-library/dom";
+import { fireEvent, screen, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import BillsUI from "../views/BillsUI.js";
 import Bills from "../containers/Bills.js"; // Ajout
 import { bills } from "../fixtures/bills.js";
-// import { ROUTES_PATH} from "../constants/routes.js";
 import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store"; // Ajout
@@ -17,12 +16,12 @@ import router from "../app/Router.js";
 
 describe("Given I am connected as an employee", () => {
   // AJOUT
-  describe("When I am on Bills page but it is loading", () => {
-    test("Then, Loading page should be rendered", () => {
-      document.body.innerHTML = BillsUI({ loading: true });
-      expect(screen.getAllByText("Loading...")).toBeTruthy();
-    });
-  });
+  // describe("When I am on Bills page but it is loading", () => {
+  //   test("Then, Loading page should be rendered", () => {
+  //     document.body.innerHTML = BillsUI({ loading: true });
+  //     expect(screen.getAllByText("Loading...")).toBeTruthy();
+  //   });
+  // });
 
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
@@ -42,11 +41,14 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills);
       await waitFor(() => screen.getByTestId("icon-window"));
       const windowIcon = screen.getByTestId("icon-window");
+      console.log("windowIcon", windowIcon);
       //to-do write expect expression
       expect(windowIcon.className).toEqual("active-icon"); // AJOUT : Vérifie si l'icône a bien la class CSS "active-icon"
     });
+  });
 
-    test("Then bills should be ordered from earliest to latest", () => {
+  describe("When I am on Bills Page with existings bills", () => {  
+      test("Then bills should be ordered from earliest to latest", () => {
       // code tri par date
       const sortBills = bills.sort((a, b) => (a.date < b.date ? 1 : -1)); // AJOUT
       document.body.innerHTML = BillsUI({ data: sortBills }); // AJOUT
@@ -62,13 +64,13 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted);
     });
 
-    // AJOUT
+    // AJOUT   
+
     describe("When I click on button new-bill", () => {
       test("Then the modal new Bill should open", () => {
         const onNavigate = (pathname) => {
           document.body.innerHTML = ROUTES({ pathname });
         };
-
         const employeeBill = new Bills({
           document,
           onNavigate,
@@ -116,7 +118,7 @@ describe("Given I am connected as an employee", () => {
         mockStore, //ajout mockstore
         localStorage: window.localStorage,
       });
-      console.log("employeeBill", employeeBill);
+      // console.log("employeeBill", employeeBill);
 
       const iconEye = screen.getAllByTestId("icon-eye");
       const handleClickIconEye = jest.fn((icon) =>
@@ -211,5 +213,4 @@ describe("Given I am a user connected as Employee", () => {
     });
   });
 });
-
 

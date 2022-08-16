@@ -27,16 +27,18 @@ export default class {
     $('#modaleFile').modal('show')
   }
 
-  getBills = () => {
-    if (this.store) {
+  // not need to cover this function by tests
+  /* istanbul ignore next */
+  getBills = () => { // récupère la bade de données
+      if (this.store) {
       return this.store
-      .bills() // ????
+      .bills() // back
       .list() // ????
-      .then(snapshot => {
+      .then(snapshot => { // réponse à la promesse
         const bills = snapshot
           //.sort((a, b) => (b - a)) 
           .sort((a, b) => new Date(b.date) - new Date(a.date)) // Tri des dates
-          .map(doc => {
+          .map(doc => { // enregistrement
             try {
               return {
                 ...doc,
