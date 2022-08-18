@@ -28,16 +28,15 @@ export default class {
   }
 
   // not need to cover this function by tests
-  /* istanbul ignore next */
-  getBills = () => { // récupère la bade de données
+  // /* istanbul ignore next */
+  getBills = () => { // récupère la base de données
       if (this.store) {
       return this.store
       .bills() // back
       .list() // ????
       .then(snapshot => { // réponse à la promesse
         const bills = snapshot
-          //.sort((a, b) => (b - a)) 
-          .sort((a, b) => new Date(b.date) - new Date(a.date)) // Tri des dates
+          // .sort((a, b) => new Date(b.date) - new Date(a.date)) // Tri des dates
           .map(doc => { // enregistrement
             try {
               return {
@@ -49,7 +48,7 @@ export default class {
             } catch(e) {
               // if for some reason, corrupted data was introduced, we manage here failing formatDate function
               // log the error and return unformatted date in that case
-              console.log(e,'for',doc)
+              // console.log(e,'for',doc)
               return {
                 ...doc,
                 date: doc.date,
@@ -57,9 +56,7 @@ export default class {
               }
             }
           })
-          console.log('length', bills.length)
-          // bills.forEach (tab => { console.log("hey", tab['date']) })
-          // console.log("bills", bills);
+          // console.log('length', bills.length)          
         return bills
       })
     }

@@ -25,9 +25,10 @@ export default class NewBill {
     // console.log("file.name", file.name.split(/\\/g))
     // console.log("filePath", filePath)
     const fileName = filePath[filePath.length - 1];
-    console.log("fileName", fileName);
+    console.log("fileName", fileName);    
+    //[Bug Hunt] - Bills BUG 3 saisie impossible d'un document qui a une extension différente de jpg, jpeg ou png
     let extension = fileName.substring(fileName.lastIndexOf(".") + 1);
-    if (extension === "jpg" || extension === "jpeg" || extension === "png") {
+    if (extension === "jpg" || extension === "jpeg" || extension === "png") {  
       console.log(extension);
       const formData = new FormData();
       const email = JSON.parse(localStorage.getItem("user")).email;
@@ -62,6 +63,7 @@ export default class NewBill {
       .files[0];
     const fileName = file.name;
     console.log("SUBMIT fileName", fileName);
+    //[Bug Hunt] - Bills BUG 3 saisie impossible d'un document qui a une extension différente de jpg, jpeg ou png
     let extension = fileName.substring(fileName.lastIndexOf(".") + 1);
     if (extension === "jpg" || extension === "jpeg" || extension === "png") {
       // SI l'extension est correcte
@@ -99,6 +101,7 @@ export default class NewBill {
   };
 
   // not need to cover this function by tests
+  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store

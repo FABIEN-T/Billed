@@ -159,7 +159,7 @@ export default class {
     }
     
     bills.forEach((bill) => {   
-        $(`#open-bill${bill.id}`).click((e) => {
+        $(`#open-bill${bill.id}`).click((e) => {          
           console.log(bill.name);
           if (tempBillId != bill.id) {
             this.handleEditTicket(e, bill, bills);   
@@ -170,7 +170,7 @@ export default class {
 
     return bills;
   }
-
+  
   getBillsAllUsers = () => {
     if (this.store) {
       return this.store
