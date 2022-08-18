@@ -14,17 +14,28 @@ import router from "../app/Router.js";
 
 
 describe("Given I am connected as an employee", () => {
+  beforeEach(() => {
+    Object.defineProperty(window, "localStorage", {
+      value: localStorageMock,
+    });
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        type: "Employee",
+      })
+    );
+  })
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
-      Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
-      });
-      window.localStorage.setItem(
-        "user",
-        JSON.stringify({
-          type: "Employee",
-        })
-      );
+      // Object.defineProperty(window, "localStorage", {
+      //   value: localStorageMock,
+      // });
+      // window.localStorage.setItem(
+      //   "user",
+      //   JSON.stringify({
+      //     type: "Employee",
+      //   })
+      // );
       const root = document.createElement("div");
       root.setAttribute("id", "root");
       document.body.append(root);
