@@ -1,6 +1,7 @@
 import VerticalLayout from "./VerticalLayout.js";
 import ErrorPage from "./ErrorPage.js";
 import LoadingPage from "./LoadingPage.js";
+import { formatDate } from "../app/format.js"
 
 import Actions from "./Actions.js";
 
@@ -21,7 +22,6 @@ const row = (bill) => {
 
 const rows = (data) => {
   return (data && data.length) ? data
-      .sort((a, b) => a.date < b.date ? 1 : -1) // [Bug report] - Bills : Ajout du tri de date
       .map(bill => row(bill))
       .join("") : ""
 }

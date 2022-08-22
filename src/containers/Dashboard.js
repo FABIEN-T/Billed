@@ -145,7 +145,7 @@ export default class {
     if (this.counter === undefined || this.index !== index) this.counter = 0; // Si changement d'index, initialisation du compteur
     
     if (this.index === undefined || this.index !== index) this.index = index;
-    console.log("++++++++");
+    // console.log("++++++++");
     if (this.counter % 2 === 0) {
       $(`#arrow-icon${this.index}`).css({ transform: "rotate(0deg)" });
       $(`#status-bills-container${this.index}`).html(
@@ -160,7 +160,7 @@ export default class {
     
     bills.forEach((bill) => {   
         $(`#open-bill${bill.id}`).click((e) => {          
-          console.log(bill.name);
+          // console.log(bill.name);
           if (tempBillId != bill.id) {
             this.handleEditTicket(e, bill, bills);   
           }

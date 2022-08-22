@@ -24,7 +24,7 @@ describe("Given I am connected as an employee", () => {
         type: "Employee",
       })
     );
-  })
+  })  
   describe("When I am on Bills Page", () => {
     test("Then bill icon in vertical layout should be highlighted", async () => {
       // Object.defineProperty(window, "localStorage", {
@@ -49,19 +49,42 @@ describe("Given I am connected as an employee", () => {
     });
   });
 
-  describe("When I am on Bills Page with existings bills", () => {
+
+
+  describe("When I am on Bills Page with existings bills", () => { 
+
+    test("Then bills should be displayed in the dashboard", async () => {
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname })
+      }
+  
+      const bills = new Bills({
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage,
+      })
+  
+      const fetchedBills = await bills.getBills()
+      // const billsList = await store.bills().list()
+  
+      document.body.innerHTML = BillsUI({ data: fetchedBills })
+  
+      expect(fetchedBills.length).toBe(4)
+    })
+
     test("Then bills should be ordered from earliest to latest", () => {
       // code tri par date
-      // const sortBills = bills.sort((a, b) => (a.date < b.date ? 1 : -1)); // AJOUT
-      // document.body.innerHTML = BillsUI({ data: sortBills }); // AJOUT
+      const sortBills = bills.sort((a, b) => (a.date < b.date ? 1 : -1)); // AJOUT
+      document.body.innerHTML = BillsUI({ data: sortBills }); // AJOUT
             
-      document.body.innerHTML = BillsUI({ data: bills })
+      // document.body.innerHTML = BillsUI({ data: bills })
       const dates = screen.getAllByText(/^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i).map(a => a.innerHTML)
       const antiChrono = (a, b) => ((a < b) ? 1 : -1)
       const datesSorted = [...dates].sort(antiChrono)
       expect(dates).toEqual(datesSorted)
     });
-
+    
     // AJOUT
 
     describe("When I click on button new-bill", () => {
@@ -79,6 +102,7 @@ describe("Given I am connected as an employee", () => {
         const handleClickNewBill = jest.fn((e) =>
           employeeBill.handleClickNewBill(e)
         );
+        // await waitFor(() => screen.getByTestId("btn-new-bill"));
         const buttonNewBill = screen.getByTestId("btn-new-bill");
         buttonNewBill.addEventListener("click", handleClickNewBill);
         userEvent.click(buttonNewBill);
@@ -92,15 +116,15 @@ describe("Given I am connected as an employee", () => {
   // Ligne 20
   describe("When I am on Bills Page and I click on icon eye of one bill", () => {
     test("Then modale should open", () => {
-      // Object.defineProperty(window, "localStorage", {
-      //   value: localStorageMock,
-      // });
-      // window.localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     type: "Employee",
-      //   })
-      // );
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+        })
+      );
       $.fn.modal = jest.fn(); // simule le fonctionnement de la fonction Jquery() / $() - Prevent jQuery error
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
@@ -133,12 +157,26 @@ describe("Given I am connected as an employee", () => {
       const modale = screen.getByText("Justificatif");
       expect(modale).toBeTruthy();
     });
-  });
+  }); 
 });
 
-// test d'intégration GET
+
+
+// test d'intégration GET - données via URL
+
 describe("Given I am a user connected as Employee", () => {
   describe("When I navigate to Bills page", () => {
+    beforeEach(() => {
+      // localStorage.setItem(
+      //   "user",
+      //   JSON.stringify({ type: "Employee", email: "a@a" })
+      // );
+      // const root = document.createElement("div");
+      // root.setAttribute("id", "root");
+      // document.body.append(root);
+      // router(); // from "../app/Router.js";
+      window.onNavigate(ROUTES_PATH.Bills); // Aiguillage vers la page Bills
+    })
     test("fetches bills from mock API GET", async () => {
       localStorage.setItem(
         "user",
@@ -172,6 +210,7 @@ describe("Given I am a user connected as Employee", () => {
         document.body.appendChild(root); // création d'un container ?
         router();
       });
+
       test("fetches bills from an API and fails with 404 message error", async () => {
         mockStore.bills.mockImplementationOnce(() => {
           // mockStore.bills : données mockées de store.js
@@ -213,3 +252,4 @@ describe("Given I am a user connected as Employee", () => {
     });
   });
 });
+

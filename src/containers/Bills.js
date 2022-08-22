@@ -32,23 +32,22 @@ export default class {
   getBills = () => { // récupère la base de données
       if (this.store) {
       return this.store
-      .bills() // back
-      .list() // ????
+      .bills()
+      .list()
       .then(snapshot => { // réponse à la promesse
         const bills = snapshot
-          // .sort((a, b) => new Date(b.date) - new Date(a.date)) // Tri des dates
-          .map(doc => { // enregistrement
+          .sort((a, b) => new Date(b.date) - new Date(a.date)) // Tri des dates
+          .map(doc => { // doc : enregistrement
             try {
               return {
                 ...doc,
                 date: formatDate(doc.date),
-                // date: doc.date,
-                status: formatStatus(doc.status)                
+                status: formatStatus(doc.status)                                
               }
             } catch(e) {
               // if for some reason, corrupted data was introduced, we manage here failing formatDate function
               // log the error and return unformatted date in that case
-              // console.log(e,'for',doc)
+              console.log(e,'for',doc)
               return {
                 ...doc,
                 date: doc.date,
@@ -56,7 +55,7 @@ export default class {
               }
             }
           })
-          // console.log('length', bills.length)          
+          console.log('length', bills.length)          
         return bills
       })
     }
