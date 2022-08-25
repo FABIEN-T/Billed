@@ -2,7 +2,8 @@
  * @jest-environment jsdom
  */
 
-import { screen, fireEvent, userEvent, waitFor } from "@testing-library/dom";
+import { screen, fireEvent, waitFor } from "@testing-library/dom";
+// import "@testing-library/jest-dom";
 import NewBillUI from "../views/NewBillUI.js";
 import NewBill from "../containers/NewBill.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
@@ -10,34 +11,34 @@ import mockStore from "../__mocks__/store.js";
 import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import router from "../app/Router.js";
 
-jest.mock("../app/store", () => mockStore);
-global.alert = jest.fn();
+jest.mock("../app/store", () => mockStore); // permet de mocker l'API, simuler son comportement lors des requêtes
+global.alert = jest.fn(); // permet aux tests de reconnaître window.alert sans provoquer d'erreur
 
 
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     test("Then mail icon in vertical layout should be highlighted", async () => {
-      Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
+      Object.defineProperty(window, "localStorage", { // permet de définir de nouvelles propriétés, ici stockage de données dans le navigateur web sans faire intervenir le serveur
+        value: localStorageMock, //  localStorageMock est affecté à la propriété value de localStorage
       });
-      window.localStorage.setItem(
+
+      window.localStorage.setItem( // Employee est défini comme utilisateur
         "user",
         JSON.stringify({
           type: "Employee",
         })
       );
-      const root = document.createElement("div");
+      const root = document.createElement("div"); // Création du container de la page sélectionnée avec router()
       root.setAttribute("id", "root");
       document.body.append(root);
-      router();
-      window.onNavigate(ROUTES_PATH.NewBill);
-      await waitFor(() => screen.getByTestId("icon-mail"));
-      const mailIcon = screen.getByTestId("icon-mail");
-      // console.log("icon-mail", icon-mail);
+      router(); // permet d'aiguiller sur la bonne page en fonction de la propriété ROUTES_PATH
+      window.onNavigate(ROUTES_PATH.NewBill); // navigue vers la page "Note de frais"
+      await waitFor(() => screen.getByTestId("icon-mail")); // {waitFor}"@testing-library/dom" attends sa détection dans le dom
+      const mailIcon = screen.getByTestId("icon-mail"); // windowIcon récupère les éléments via data-testid
       expect(mailIcon.className).toEqual("active-icon");
     });
 
-    test("Then there should be a form to edit new Bill", () => {
+    test("Then there should be a form to edit a new Bill", () => {
       document.body.innerHTML = NewBillUI();
       const form = screen.getByTestId("form-new-bill");
       expect(form).toBeTruthy();
@@ -60,6 +61,7 @@ describe("Given I am connected as an employee on New Bill Page", () => {
       localStorage: window.localStorage,
     });
   });
+
   describe("When I select a file", () => {
     test("it should call handleChangeFile method", () => {
       const handleChangeFile = jest.fn(newBill.handleChangeFile);
@@ -67,7 +69,7 @@ describe("Given I am connected as an employee on New Bill Page", () => {
       inputFile.addEventListener("change", handleChangeFile);
       fireEvent.change(inputFile, {
         target: {
-          files: [new File(["proof.jpg"], "proof.jpg", { type: "image/jpg" })], // File ?
+          files: [new File(["proof.jpg"], "proof.jpg", { type: "image/jpg" })],
         },
       });
       expect(handleChangeFile).toHaveBeenCalled();
@@ -100,8 +102,6 @@ describe("Given I am connected as an employee on New Bill Page", () => {
           ],
         },
       });      
-      // console.log("INPUT", (inputFile.files[0].name))
-      // console.log("INPUT2", e.target.value)
       // expect(inputFile.files[0].name).toBe("invoice.pdf");
       expect(handleChangeFile).toHaveReturnedWith(""); // Pas d'influence sur lcov-report
     });
@@ -150,9 +150,14 @@ describe("Given I am connected as an employee on New Bill Page", () => {
 
 
 
-//test d'intégration POST - données via formualaire
 
-describe("Given I am connected as Employee on NewBill page, and submit the form", () => {
+
+
+/**
+ * test d'intégration POST OK
+ */
+
+ describe("Given I am connected as Employee on NewBill page, and submit the form", () => {
   beforeEach(() => {
     jest.spyOn(mockStore, "bills");
 
@@ -172,74 +177,89 @@ describe("Given I am connected as Employee on NewBill page, and submit the form"
     router();
   });
 
-  describe("when APi is working well", () => {
-  //   test("then i should be sent on bills page with bills updated", async () => {
-  //     const newBill = new NewBill({
-  //       document,
-  //       onNavigate,
-  //       store: mockStore,
-  //       localStorage: window.localStorageMock,
-  //     });
-
-  //     const form = await waitFor(() =>screen.getByTestId("form-new-bill"));
-  //     const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-  //     form.addEventListener("submit", handleSubmit);
-
-  //     fireEvent.submit(form);
-
-  //     expect(handleSubmit).toHaveBeenCalled();
-  //     expect(screen.getByText("Mes notes de frais")).toBeTruthy();
-  //     expect(mockStore.bills).toHaveBeenCalled();
-  //   });    
-  });
- 
-
-  describe("When an error occurs on API", () => {
-    beforeEach(() => {
-      jest.spyOn(mockStore, "bills");
-      Object.defineProperty(window, "localStorage", {
-        value: localStorageMock,
-      });
-      window.localStorage.setItem(
-        "user",
-        JSON.stringify({
-          type: "Employee",
-          // email: "a@a",
-        })
-      );
+  describe("When I create new bill", () => {
+    test("send bill to mock API POST", async () => {
+      localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "a@a" }))
       const root = document.createElement("div");
-      root.setAttribute("id", "root");
-      document.body.appendChild(root);
-      router();
-    });
-    test("fetches bills from an API and fails with 404 message error", async () => {
-      mockStore.bills.mockImplementationOnce(() => {
-        return {
-          list : () => {
-            return Promise.reject(new Error("Erreur 404"));
-          },
-        };
-      });
-      window.onNavigate(ROUTES_PATH.Dashboard);
-      await new Promise(process.nextTick);
-      const message = await screen.getByText(/Erreur 404/);
-      console.log("AAA", document.body.innerHTML)
-      expect(message).toBeTruthy();
-    });
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.NewBill)
+      jest.spyOn(mockStore, "bills")
 
-    test("fetches messages from an API and fails with 500 message error", async () => {
-      mockStore.bills.mockImplementationOnce(() => {
-        return {
-          create: () => {
-            return Promise.reject(new Error("Erreur 500"));
-          },
-        };
+      const newBill = new NewBill({
+                  document,
+                  onNavigate,
+                  store: mockStore,
+                  localStorage: window.localStorage,
+                });
+      // await waitFor(() => screen.getByTestId("form-new-bill"));
+      const form = screen.getByTestId("form-new-bill");
+      const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+      form.addEventListener("submit", handleSubmit);
+      fireEvent.submit(form);
+      await new Promise(process.nextTick);
+      console.log("document.body", document.body.innerHTML)
+      expect(handleSubmit).toHaveBeenCalled
+    })
+  
+
+    describe("When an error occurs on API", () => {
+      test("then it should display a message error 404", async () => {
+        console.error = jest.fn();
+        window.onNavigate(ROUTES_PATH.NewBill);
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            update: () => {
+              return Promise.reject(new Error("Erreur 404"));
+            },
+          };
+        });
+
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store: mockStore,
+          localStorage: window.localStorage,
+        });
+
+        const form = screen.getByTestId("form-new-bill");
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
+        fireEvent.submit(form);
+
+        expect(handleSubmit).toHaveBeenCalled();
+        await new Promise(process.nextTick);
+        expect(console.error).toHaveBeenCalledWith(new Error("Erreur 404"));
       });
 
-      window.onNavigate(ROUTES_PATH.Dashboard);
-      await new Promise(process.nextTick);
-      const message = await screen.getByText(/Erreur 500/);
-      expect(message).toBeTruthy();
+      test("then it should display a message error 500", async () => {
+        console.error = jest.fn();
+        window.onNavigate(ROUTES_PATH.NewBill);
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            update: () => {
+              return Promise.reject(new Error("Erreur 500"));
+            },
+          };
+        });
+
+        const newBill = new NewBill({
+          document,
+          onNavigate,
+          store: mockStore,
+          localStorage: window.localStorage,
+        });
+
+        const form = screen.getByTestId("form-new-bill");
+        const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+        form.addEventListener("submit", handleSubmit);
+        fireEvent.submit(form);
+
+        expect(handleSubmit).toHaveBeenCalled();
+        await new Promise(process.nextTick);
+        expect(console.error).toHaveBeenCalledWith(new Error("Erreur 500"));
+      });
     });
   });
 });

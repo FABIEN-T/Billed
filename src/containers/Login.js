@@ -44,8 +44,10 @@ export default class Login {
       //[BUG] Résolution      
       // email: e.target.querySelector(`input[data-testid="employee-email-input"]`).value,
       // password: e.target.querySelector(`input[data-testid="employee-password-input"]`).value,
-      email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value,
+      //***************2 [BUG report] - Login*******************/           
+      email: e.target.querySelector(`input[data-testid="admin-email-input"]`).value, // correction du choix d'utilisateur
       password: e.target.querySelector(`input[data-testid="admin-password-input"]`).value,
+      /*********************************************************/
       status: "connected"
     }
     this.localStorage.setItem("user", JSON.stringify(user))

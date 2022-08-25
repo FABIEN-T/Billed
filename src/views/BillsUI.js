@@ -1,8 +1,6 @@
 import VerticalLayout from "./VerticalLayout.js";
 import ErrorPage from "./ErrorPage.js";
 import LoadingPage from "./LoadingPage.js";
-import { formatDate } from "../app/format.js"
-
 import Actions from "./Actions.js";
 
 const row = (bill) => {
@@ -22,6 +20,10 @@ const row = (bill) => {
 
 const rows = (data) => {
   return (data && data.length) ? data
+      /***************1 [BUG report] - Bills*******************/
+      // Tri des dates, AJOUT pour permettre la bonne exécution du test unitaire
+      .sort((a, b) => new Date(b.date) - new Date(a.date)) 
+      /*********************************************************/
       .map(bill => row(bill))
       .join("") : ""
 }

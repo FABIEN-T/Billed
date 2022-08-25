@@ -5,7 +5,9 @@ import { ROUTES_PATH } from "../constants/routes.js";
 import USERS_TEST from "../constants/usersTest.js";
 import Logout from "./Logout.js";
 
+/***************4 [BUG Hunt] - Dashboard*********************/ 
 let tempBillId = "" // Mémorisation du précédent id pour comparaison
+/************************************************************/
 
 export const filteredBills = (data, status) => {
   return data && data.length
@@ -145,7 +147,6 @@ export default class {
     if (this.counter === undefined || this.index !== index) this.counter = 0; // Si changement d'index, initialisation du compteur
     
     if (this.index === undefined || this.index !== index) this.index = index;
-    // console.log("++++++++");
     if (this.counter % 2 === 0) {
       $(`#arrow-icon${this.index}`).css({ transform: "rotate(0deg)" });
       $(`#status-bills-container${this.index}`).html(
@@ -157,14 +158,15 @@ export default class {
       $(`#status-bills-container${this.index}`).html("");
       this.counter++;
     }
-    
+        
     bills.forEach((bill) => {   
-        $(`#open-bill${bill.id}`).click((e) => {          
-          // console.log(bill.name);
-          if (tempBillId != bill.id) {
-            this.handleEditTicket(e, bill, bills);   
+        $(`#open-bill${bill.id}`).click((e) => {  
+          /***************4 [BUG Hunt] - Dashboard*********************/ 
+          if (tempBillId != bill.id) { // Si le ticket n'a pas le même id que le précédent
+            this.handleEditTicket(e, bill, bills); // Alors visualiser le ticket
           }
-          tempBillId = bill.id;
+          tempBillId = bill.id; // Mémorisation du dernier id pour comparaison
+          /***********************************************************/
         });
     });
 

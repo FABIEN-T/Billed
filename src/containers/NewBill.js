@@ -22,19 +22,20 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`)
       .files[0];
     const filePath = e.target.value.split(/\\/g);
-    // console.log("file.name", file.name.split(/\\/g))
-    // console.log("filePath", filePath)
     const fileName = filePath[filePath.length - 1];
-    // console.log("1 fileName", fileName);    
-    //[Bug Hunt] - Bills BUG 3 saisie impossible d'un document qui a une extension différente de jpg, jpeg ou png
     let extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+
+    /***************3 [BUG Hunt] - Bills*********************/
+    // Rendre la saisie impossible d'un document qui a une extension différente de jpg, jpeg ou png
     if (extension === "jpg" || extension === "jpeg" || extension === "png") {  
-      // console.log(extension);      
-      const formData = new FormData(); // FormData() ??
+    /*********************************************************/
+     const formData = new FormData();
       const email = JSON.parse(localStorage.getItem("user")).email;
       formData.append("file", file); 
       formData.append("email", email);
 
+      // not need to cover this function by tests
+      /* istanbul ignore next */
       this.store
         .bills()
         .create({
@@ -44,32 +45,25 @@ export default class NewBill {
           },
         })
         .then(({ fileUrl, key }) => {
-          // console.log(fileUrl);
           this.billId = key;
           this.fileUrl = fileUrl;
           this.fileName = fileName;
         })
         .catch((error) => console.error(error));
+
     } else {
-      e.target.value = ""; // Correction BUG vider le champ si mauvaise extension
-      console.log("2 fileName", fileName);  
-      console.log("e.target.value", e.target.value);
+      /***************3 [BUG Hunt] - Bills*********************/
+      e.target.value = ""; // vider le champ si mauvaise extension
       alert(
         "veuillez joindre un fichier avec une extension correcte : jpg, jpeg, png"
       );
       return ""
-    }
+      /*********************************************************/
+    }      
   };
 
   handleSubmit = (e) => {
     e.preventDefault();
-    // const file = this.document.querySelector(`input[data-testid="file"]`).files[0];
-    // const fileName = file.name;
-    // console.log("SUBMIT fileName", fileName);
-      // console.log(
-      //   'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-      //   e.target.querySelector(`input[data-testid="datepicker"]`).value
-      // );
       const email = JSON.parse(localStorage.getItem("user")).email;
       const bill = {
         email,
@@ -91,12 +85,11 @@ export default class NewBill {
         status: "pending",
       };
       this.updateBill(bill);
-      this.onNavigate(ROUTES_PATH["Bills"]);
-    
+      this.onNavigate(ROUTES_PATH["Bills"]);    
   };
 
   // not need to cover this function by tests
-  /* istanbul ignore next */
+  // /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store

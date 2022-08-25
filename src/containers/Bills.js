@@ -36,7 +36,9 @@ export default class {
       .list()
       .then(snapshot => { // réponse à la promesse
         const bills = snapshot
+          //***************1 [BUG report] - Bills*******************/
           .sort((a, b) => new Date(b.date) - new Date(a.date)) // Tri des dates
+          /*********************************************************/
           .map(doc => { // doc : enregistrement
             try {
               return {

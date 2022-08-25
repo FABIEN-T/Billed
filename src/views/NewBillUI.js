@@ -1,7 +1,10 @@
 import VerticalLayout from './VerticalLayout.js'
 
 export default () => {
-  //Ligne 58 : [Bug Hunt] - Bills BUG 3 saisie impossible d'un document qui a une extension différente de jpg, jpeg ou png
+  /***************3 [BUG Hunt] - Bills*********************/
+  /* Ligne 61 : <input required type="file" accept=".png, .jpg, .jpeg" class="form-control blue-border" data-testid="file" /> 
+  /* Ajout de l'Attribut accept pour restreindre le type d'extensions
+  /*********************************************************/
   return (`
     <div class='layout'>
       ${VerticalLayout(120)}
