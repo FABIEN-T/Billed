@@ -58,8 +58,9 @@ describe("Given I am connected as an employee", () => {
     });
 
     test("Then bills should be ordered from earliest to latest", () => {
-      document.body.innerHTML = BillsUI({ data: bills });
-      // const dates : récupère les dates mockées (fixtures/bills) au format yyyymmdd
+      // tri par date : de la plus récente à la plus lointaine
+      const sortBills = bills.sort((a, b) => (a.date < b.date ? 1 : -1)); // AJOUT
+      document.body.innerHTML = BillsUI({ data: sortBills }); // AJOUT
       const dates = screen
         .getAllByText(
           /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
@@ -116,14 +117,17 @@ describe("Given I am connected as an employee", () => {
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
-      const employeeBill = new Bills({  // création d'une note de frais
+      const employeeBill = new Bills({
+        // création d'une note de frais
         document,
         onNavigate,
         mockStore,
         localStorage: window.localStorage,
       });
 
-      const handleClickNewBill = jest.fn((e) => employeeBill.handleClickNewBill(e));
+      const handleClickNewBill = jest.fn((e) =>
+        employeeBill.handleClickNewBill(e)
+      );
       const buttonNewBill = screen.getByTestId("btn-new-bill"); // récupération du bouton "Nouvelle note de frais"
       buttonNewBill.addEventListener("click", handleClickNewBill); // écoute du clic
       userEvent.click(buttonNewBill); // click virtuel sur le bouton "Nouvelle note de frais"
@@ -170,14 +174,15 @@ describe("Given I am a user connected as Employee", () => {
       });
 
       test("fetches bills from an API and fails with 404 message error", async () => {
-        mockStore.bills.mockImplementationOnce(() => { // mockStore.bills : données mockées de store.js
+        mockStore.bills.mockImplementationOnce(() => {
+          // mockStore.bills : données mockées de store.js
           return {
             list: () => {
               return Promise.reject(new Error("Erreur 404"));
             },
           };
         });
-        
+
         window.onNavigate(ROUTES_PATH.Bills);
         await new Promise(process.nextTick);
         const message = await screen.getByText(/Erreur 404/); // slashs regex Pour intégrer espace entre Erreur et 404
@@ -192,7 +197,7 @@ describe("Given I am a user connected as Employee", () => {
             },
           };
         });
-        
+
         window.onNavigate(ROUTES_PATH.Bills);
         await new Promise(process.nextTick);
         const message = await screen.getByText(/Erreur 500/);

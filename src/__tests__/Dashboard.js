@@ -10,8 +10,7 @@ import Dashboard, { filteredBills, cards } from "../containers/Dashboard.js";
 import { ROUTES, ROUTES_PATH } from "../constants/routes";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store";
-// import {  } from "../fixtures/bills"
-import { bills } from "../fixtures/bills"; // Correction de la ligne précédente
+import { bills } from "../fixtures/bills"; // Correction, il manquait "bills" entre les accolades
 import router from "../app/Router";
 
 jest.mock("../app/store", () => mockStore);

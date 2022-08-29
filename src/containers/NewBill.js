@@ -27,11 +27,11 @@ export default class NewBill {
 
     /***************3 [BUG Hunt] - Bills*********************/
     // Rendre la saisie impossible d'un document qui a une extension différente de jpg, jpeg ou png
-    if (extension === "jpg" || extension === "jpeg" || extension === "png") {  
-    /*********************************************************/
-     const formData = new FormData();
+    if (extension === "jpg" || extension === "jpeg" || extension === "png") {
+      /*********************************************************/
+      const formData = new FormData();
       const email = JSON.parse(localStorage.getItem("user")).email;
-      formData.append("file", file); 
+      formData.append("file", file);
       formData.append("email", email);
 
       // not need to cover this function by tests
@@ -50,46 +50,44 @@ export default class NewBill {
           this.fileName = fileName;
         })
         .catch((error) => console.error(error));
-
     } else {
       /***************3 [BUG Hunt] - Bills*********************/
       e.target.value = ""; // vider le champ si mauvaise extension
       alert(
         "veuillez joindre un fichier avec une extension correcte : jpg, jpeg, png"
       );
-      return ""
+      return "";
       /*********************************************************/
-    }      
+    }
   };
 
   handleSubmit = (e) => {
     e.preventDefault();
-      const email = JSON.parse(localStorage.getItem("user")).email;
-      const bill = {
-        email,
-        type: e.target.querySelector(`select[data-testid="expense-type"]`)
-          .value,
-        name: e.target.querySelector(`input[data-testid="expense-name"]`).value,
-        amount: parseInt(
-          e.target.querySelector(`input[data-testid="amount"]`).value
-        ),
-        date: e.target.querySelector(`input[data-testid="datepicker"]`).value,
-        vat: e.target.querySelector(`input[data-testid="vat"]`).value,
-        pct:
-          parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) ||
-          20,
-        commentary: e.target.querySelector(`textarea[data-testid="commentary"]`)
-          .value,
-        fileUrl: this.fileUrl,
-        fileName: this.fileName,
-        status: "pending",
-      };
-      this.updateBill(bill);
-      this.onNavigate(ROUTES_PATH["Bills"]);    
+    const email = JSON.parse(localStorage.getItem("user")).email;
+    const bill = {
+      email,
+      type: e.target.querySelector(`select[data-testid="expense-type"]`).value,
+      name: e.target.querySelector(`input[data-testid="expense-name"]`).value,
+      amount: parseInt(
+        e.target.querySelector(`input[data-testid="amount"]`).value
+      ),
+      date: e.target.querySelector(`input[data-testid="datepicker"]`).value,
+      vat: e.target.querySelector(`input[data-testid="vat"]`).value,
+      pct:
+        parseInt(e.target.querySelector(`input[data-testid="pct"]`).value) ||
+        20,
+      commentary: e.target.querySelector(`textarea[data-testid="commentary"]`)
+        .value,
+      fileUrl: this.fileUrl,
+      fileName: this.fileName,
+      status: "pending",
+    };
+    this.updateBill(bill);
+    this.onNavigate(ROUTES_PATH["Bills"]);
   };
 
   // not need to cover this function by tests
-  // /* istanbul ignore next */
+  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store

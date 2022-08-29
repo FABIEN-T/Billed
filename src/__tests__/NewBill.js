@@ -14,15 +14,16 @@ import router from "../app/Router.js";
 jest.mock("../app/store", () => mockStore); // permet de mocker l'API, simuler son comportement lors des requêtes
 global.alert = jest.fn(); // permet aux tests de reconnaître window.alert sans provoquer d'erreur
 
-
 describe("Given I am connected as an employee", () => {
   describe("When I am on NewBill Page", () => {
     test("Then mail icon in vertical layout should be highlighted", async () => {
-      Object.defineProperty(window, "localStorage", { // permet de définir de nouvelles propriétés, ici stockage de données dans le navigateur web sans faire intervenir le serveur
+      Object.defineProperty(window, "localStorage", {
+        // permet de définir de nouvelles propriétés, ici stockage de données dans le navigateur web sans faire intervenir le serveur
         value: localStorageMock, //  localStorageMock est affecté à la propriété value de localStorage
       });
 
-      window.localStorage.setItem( // Employee est défini comme utilisateur
+      window.localStorage.setItem(
+        // Employee est défini comme utilisateur
         "user",
         JSON.stringify({
           type: "Employee",
@@ -43,7 +44,7 @@ describe("Given I am connected as an employee", () => {
       const form = screen.getByTestId("form-new-bill");
       expect(form).toBeTruthy();
     });
-  })
+  });
 });
 
 describe("Given I am connected as an employee on New Bill Page", () => {
@@ -101,7 +102,7 @@ describe("Given I am connected as an employee on New Bill Page", () => {
             new File(["invoice.pdf"], "invoice.pdf", { type: "document/pdf" }),
           ],
         },
-      });      
+      });
       // expect(inputFile.files[0].name).toBe("invoice.pdf");
       expect(handleChangeFile).toHaveReturnedWith(""); // Pas d'influence sur lcov-report
     });
@@ -146,18 +147,11 @@ describe("Given I am connected as an employee on New Bill Page", () => {
   });
 });
 
-
-
-
-
-
-
-
 /**
  * test d'intégration POST OK
  */
 
- describe("Given I am connected as Employee on NewBill page, and submit the form", () => {
+describe("Given I am connected as Employee on NewBill page, and submit the form", () => {
   beforeEach(() => {
     jest.spyOn(mockStore, "bills");
 
@@ -179,33 +173,35 @@ describe("Given I am connected as an employee on New Bill Page", () => {
 
   describe("When I create new bill", () => {
     test("send bill to mock API POST", async () => {
-      localStorage.setItem("user", JSON.stringify({ type: "Employee", email: "a@a" }))
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ type: "Employee", email: "a@a" })
+      );
       const root = document.createElement("div");
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.NewBill)
-      jest.spyOn(mockStore, "bills")
+      root.setAttribute("id", "root");
+      document.body.append(root);
+      router();
+      window.onNavigate(ROUTES_PATH.NewBill);
+      jest.spyOn(mockStore, "bills");
 
       const newBill = new NewBill({
-                  document,
-                  onNavigate,
-                  store: mockStore,
-                  localStorage: window.localStorage,
-                });
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage,
+      });
       // await waitFor(() => screen.getByTestId("form-new-bill"));
       const form = screen.getByTestId("form-new-bill");
       const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
       form.addEventListener("submit", handleSubmit);
       fireEvent.submit(form);
       await new Promise(process.nextTick);
-      console.log("document.body", document.body.innerHTML)
-      expect(handleSubmit).toHaveBeenCalled
-    })
-  
+      console.log("document.body", document.body.innerHTML);
+      expect(handleSubmit).toHaveBeenCalled;
+    });
 
     describe("When an error occurs on API", () => {
-      test("then it should display a message error 404", async () => {
+      test("send bill to mock API POST and fails with 404 message error", async () => {
         console.error = jest.fn();
         window.onNavigate(ROUTES_PATH.NewBill);
         mockStore.bills.mockImplementationOnce(() => {
@@ -233,7 +229,7 @@ describe("Given I am connected as an employee on New Bill Page", () => {
         expect(console.error).toHaveBeenCalledWith(new Error("Erreur 404"));
       });
 
-      test("then it should display a message error 500", async () => {
+      test("then it should display a 500 message error", async () => {
         console.error = jest.fn();
         window.onNavigate(ROUTES_PATH.NewBill);
         mockStore.bills.mockImplementationOnce(() => {
